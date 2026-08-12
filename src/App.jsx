@@ -1,9 +1,11 @@
-import React from 'react';
+import StorePicker from './components/place';
 
-export default function App() {
+function App() {
   return (
     <div>
-      <h1>리액트 연결 완료!</h1>
+      <StorePicker />
     </div>
   );
 }
+
+export default App;
