@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from 'react';
 import CategoryChoose from './components/category_choose/CategoryChoose';
 
@@ -11,6 +12,12 @@ function App() {
       <CategoryChoose onGoHome={handleGoHome} />
     </div>
   );
+=======
+import CategoryRandom from "./components/categoryrandom";
+
+function App() {
+  return <CategoryRandom />;
+>>>>>>> 4908b3cc8f8585d0a06d0223ec3c18a941197141
 }
 
 export default App;
