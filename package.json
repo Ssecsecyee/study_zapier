@@ -1,0 +1,31 @@
+{
+  "name": "study_zapier",
+  "version": "1.0.0",
+  "description": "> **Slack, GitHub, Zapier, Supabase**를 연동하여 효율적인 협업 프로세스를 구축하고 개발하는 스터디 프로젝트입니다.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ssecsecyee/study_zapier.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Ssecsecyee/study_zapier/issues"
+  },
+  "homepage": "https://github.com/Ssecsecyee/study_zapier#readme",
+  "dependencies": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.5",
+    "vite": "^8.2.1"
+  }
+}
