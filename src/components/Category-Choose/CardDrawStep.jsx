@@ -8,14 +8,14 @@ const CardDrawStep = ({
   pickedStore,
   isFlipped,
   onCardClick,
-  onBack,
+  onBackToCategory,
   onResetAll,
-  onRetry
+  onRetry,
 }) => {
   return (
     <div className="step-container card-section">
       <div className="step-header">
-        <button className="back-btn" onClick={onBack}>
+        <button className="back-btn" onClick={onBackToCategory}>
           ← {initialCategory ? '처음으로' : '카테고리 재선택'}
         </button>
         <h2 className="category-heading">
@@ -36,7 +36,7 @@ const CardDrawStep = ({
               isHidden={isHidden}
               isFlipped={isFlipped}
               pickedStore={pickedStore}
-              onClick={onCardClick}
+              onClick={() => onCardClick(index)}
             />
           );
         })}

@@ -3,7 +3,17 @@ import CategorySelectStep from './CategorySelectStep';
 import CardDrawStep from './CardDrawStep';
 import './CategoryChoose.css';
 
-const CategoryChoose = ({ storesData = {}, onGoHome, initialCategory = null }) => {
+// 내부에 데이터를 직접 import해서 props 누락 방지
+import { CATEGORIES as DEFAULT_CATEGORIES } from '../../data/categories';
+import { stores as DEFAULT_STORES } from '../../data/stores';
+
+const CategoryChoose = ({ categories, storesData, onGoHome, initialCategory = null }) => {
+  // props가 안 들어오면 알아서 categories.js와 stores.js 데이터를 사용
+  const categoryList = (categories && categories.length > 0) ? categories : DEFAULT_CATEGORIES;
+  const storeList = (storesData && (Array.isArray(storesData) ? storesData.length > 0 : Object.keys(storesData).length > 0)) 
+    ? storesData 
+    : DEFAULT_STORES;
+
   const [step, setStep] = useState(initialCategory ? 2 : 1);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [pickedCardIndex, setPickedCardIndex] = useState(null);
@@ -28,7 +38,15 @@ const CategoryChoose = ({ storesData = {}, onGoHome, initialCategory = null }) =
   };
 
   const getRandomStore = (category) => {
-    const stores = storesData[category] || [];
+    let stores = [];
+    if (Array.isArray(storeList)) {
+      stores = category === "맛집" 
+        ? storeList 
+        : storeList.filter((s) => s.category === category);
+    } else {
+      stores = storeList[category] || [];
+    }
+
     if (stores.length === 0) return null;
 
     let candidates = stores.filter(
@@ -90,11 +108,12 @@ const CategoryChoose = ({ storesData = {}, onGoHome, initialCategory = null }) =
 
   return (
     <div className="category-choose-container">
-      {step === 1 && (
-        <CategorySelectStep onSelectCategory={handleCategorySelect} />
-      )}
-
-      {step === 2 && (
+      {step === 1 ? (
+        <CategorySelectStep
+          categories={categoryList}
+          onSelectCategory={handleCategorySelect}
+        />
+      ) : (
         <CardDrawStep
           selectedCategory={selectedCategory}
           initialCategory={initialCategory}
@@ -102,7 +121,7 @@ const CategoryChoose = ({ storesData = {}, onGoHome, initialCategory = null }) =
           pickedStore={pickedStore}
           isFlipped={isFlipped}
           onCardClick={handleCardClick}
-          onBack={handleBackToCategory}
+          onBackToCategory={handleBackToCategory}
           onResetAll={handleResetAll}
           onRetry={handleRetry}
         />

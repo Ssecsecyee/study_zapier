@@ -4,10 +4,10 @@ const StoreCard = ({ index, isSelected, isHidden, isFlipped, pickedStore, onClic
   return (
     <div
       className={`card-item ${isSelected ? 'selected' : ''} ${isHidden ? 'hidden' : ''}`}
-      onClick={() => onClick(index)}
+      onClick={onClick}
     >
       <div className={`card-inner ${isSelected && isFlipped ? 'flipped' : ''}`}>
-        {/* 뒷면 (질문 상자) */}
+        {/* 뒷면 (선택 전) */}
         <div className="card-face card-back">
           <span className="card-question">❓</span>
           <span className="card-label">CARD {index + 1}</span>
