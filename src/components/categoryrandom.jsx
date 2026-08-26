@@ -6,7 +6,8 @@ const CATEGORIES = [
   "분식", "치킨", "피자", "햄버거", "고기", "해산물"
 ];
 
-function CategoryRandom() {
+// [수정] App.jsx에서 넘겨준 onNavigate 프로퍼티 받기
+function CategoryRandom({ onNavigate }) {
   const [page, setPage] = useState("home");
   const [rotation, setRotation] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -21,18 +22,14 @@ function CategoryRandom() {
     setIsSpinning(true);
     setSelectedCategory("");
 
-    // 12개 중 랜덤 선택
     const selectedIndex = Math.floor(Math.random() * CATEGORIES.length);
     const category = CATEGORIES[selectedIndex];
 
     setPendingCategory(category);
 
-    // 선택된 카테고리가 화살표 위치에 오도록 회전
     const targetModulo = (360 - selectedIndex * sliceAngle) % 360;
     const currentModulo = ((rotation % 360) + 360) % 360;
     const correction = (targetModulo - currentModulo + 360) % 360;
-
-    // 6~8바퀴 정도 돌기
     const extraTurns = 6 + Math.floor(Math.random() * 3);
 
     setRotation(
@@ -73,7 +70,13 @@ function CategoryRandom() {
               </p>
             </button>
 
-            <button className="menuCard">
+            {/* [수정] 카테고리 선택 카드 클릭 시 App.jsx를 통해 CategoryChoose 화면으로 이동 */}
+            <button 
+              className="menuCard"
+              onClick={() => {
+                if (onNavigate) onNavigate('choose', null);
+              }}
+            >
               🍽️
               <h2>카테고리 선택</h2>
               <p>
@@ -81,7 +84,13 @@ function CategoryRandom() {
               </p>
             </button>
 
-            <button className="menuCard">
+            {/* [수정] 가게 랜덤 카드 클릭 시 App.jsx를 통해 place.jsx 화면으로 이동 */}
+            <button 
+              className="menuCard"
+              onClick={() => {
+                if (onNavigate) onNavigate('storePicker', null);
+              }}
+            >
               🎲
               <h2>가게 랜덤</h2>
               <p>
@@ -128,10 +137,14 @@ function CategoryRandom() {
 
             </div>
 
-            {/* 결과가 나오면 버튼 표시 */}
+            {/* [수정] 돌림판 결과가 나오면 App.jsx의 CategoryChoose로 선택된 카테고리를 전달하며 이동 */}
             {selectedCategory && (
               <button
-                onClick={() => setPage("categorySelect")}
+                onClick={() => {
+                  if (onNavigate) {
+                    onNavigate('choose', selectedCategory);
+                  }
+                }}
               >
                 {selectedCategory} 가게 추천 보러가기 →
               </button>
@@ -143,10 +156,8 @@ function CategoryRandom() {
 
             <div className="wheelWrap">
 
-              {/* 위쪽 화살표 */}
               <div className="pointer" />
 
-              {/* 돌림판 */}
               <div
                 className="wheel"
                 style={{
@@ -197,36 +208,6 @@ function CategoryRandom() {
 
         </main>
       )}
-
-      {/* ================= 팀원 파트 연결 ================= */}
-      {page === "categorySelect" && (
-  <main className="categorySelectPage">
-
-    {/* 왼쪽 위 돌아가기 버튼 */}
-    <button
-      className="categoryBackButton"
-      onClick={() => setPage("home")}
-    >
-      ← 돌아가기
-    </button>
-
-    <div className="categorySelectContent">
-      <h1>
-        카테고리 선택 페이지
-      </h1>
-
-      <h2>
-        선택된 카테고리: {selectedCategory}
-      </h2>
-
-      <p>
-        여기에 친구가 만든 카테고리별
-        가게 추천 컴포넌트를 넣으면 됩니다.
-      </p>
-    </div>
-
-  </main>
-)}
 
     </div>
   );

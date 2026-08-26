@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CategoryChoose.css';
 
 const SEARCH_CATEGORIES = [
@@ -12,26 +12,32 @@ const CATEGORY_ICONS = {
   "피자": "🍕", "햄버거": "🍔", "고기": "🥩", "해산물": "🐟"
 };
 
-const CategoryChoose = ({ storesData = {}, onGoHome }) => {
-  // step: 1 (카테고리 선택) -> 2 (카드 뽑기)
-  const [step, setStep] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+// [수정] initialCategory를 props로 받아와서 값이 있으면 바로 2단계로 시작
+const CategoryChoose = ({ storesData = {}, onGoHome, initialCategory = null }) => {
+  const [step, setStep] = useState(initialCategory ? 2 : 1);
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [pickedCardIndex, setPickedCardIndex] = useState(null);
   const [pickedStore, setPickedStore] = useState(null);
   const [history, setHistory] = useState([]);
   const [isFlipped, setIsFlipped] = useState(false);
 
-  // 1단계: 카테고리 클릭 시 다음 페이지(Step 2)로 이동
+  // [수정] 외부에서 카테고리가 지정되어 들어올 경우 대응
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(initialCategory);
+      setStep(2);
+    }
+  }, [initialCategory]);
+
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
     setPickedCardIndex(null);
     setPickedStore(null);
     setIsFlipped(false);
     setHistory([]);
-    setStep(2); // 2단계 화면으로 전환
+    setStep(2);
   };
 
-  // 가게 추출 함수
   const getRandomStore = (category) => {
     const stores = storesData[category] || [];
     if (stores.length === 0) return null;
@@ -53,7 +59,6 @@ const CategoryChoose = ({ storesData = {}, onGoHome }) => {
     return selected;
   };
 
-  // 카드 클릭 시
   const handleCardClick = (cardIndex) => {
     if (pickedCardIndex !== null) return;
 
@@ -66,7 +71,6 @@ const CategoryChoose = ({ storesData = {}, onGoHome }) => {
     }, 100);
   };
 
-  // 다시 뽑기
   const handleRetry = () => {
     setIsFlipped(false);
     setTimeout(() => {
@@ -75,8 +79,12 @@ const CategoryChoose = ({ storesData = {}, onGoHome }) => {
     }, 400);
   };
 
-  // 카테고리 다시 선택 (1단계로 돌아가기)
   const handleBackToCategory = () => {
+    // 만약 돌림판에서 바로 넘어온 경우라면 바로 홈으로 가거나 1단계로 갈 수 있게 처리
+    if (initialCategory) {
+      if (onGoHome) onGoHome();
+      return;
+    }
     setIsFlipped(false);
     setTimeout(() => {
       setStep(1);
@@ -87,7 +95,6 @@ const CategoryChoose = ({ storesData = {}, onGoHome }) => {
     }, 200);
   };
 
-  // 처음으로 (홈 이동)
   const handleResetAll = () => {
     handleBackToCategory();
     if (onGoHome) onGoHome();
@@ -95,7 +102,6 @@ const CategoryChoose = ({ storesData = {}, onGoHome }) => {
 
   return (
     <div className="category-choose-container">
-      {/* Step 1: 카테고리 선택 페이지 */}
       {step === 1 && (
         <div className="step-container">
           <h2 className="section-title">카테고리 선택</h2>
@@ -116,12 +122,11 @@ const CategoryChoose = ({ storesData = {}, onGoHome }) => {
         </div>
       )}
 
-      {/* Step 2: 카드 뽑기 페이지 */}
       {step === 2 && (
         <div className="step-container card-section">
           <div className="step-header">
             <button className="back-btn" onClick={handleBackToCategory}>
-              ← 카테고리 재선택
+              ← {initialCategory ? '처음으로' : '카테고리 재선택'}
             </button>
             <h2 className="category-heading">
               [{selectedCategory}] 카드를 하나 선택하세요!
@@ -140,13 +145,11 @@ const CategoryChoose = ({ storesData = {}, onGoHome }) => {
                   onClick={() => handleCardClick(index)}
                 >
                   <div className={`card-inner ${isSelected && isFlipped ? 'flipped' : ''}`}>
-                    {/* 카드 뒷면 */}
                     <div className="card-face card-back">
                       <span className="card-question">❓</span>
                       <span className="card-label">CARD {index + 1}</span>
                     </div>
 
-                    {/* 카드 앞면 */}
                     <div className="card-face card-front">
                       <div className="store-detail">
                         {pickedStore ? (
@@ -180,7 +183,6 @@ const CategoryChoose = ({ storesData = {}, onGoHome }) => {
             })}
           </div>
 
-          {/* 하단 컨트롤 버튼 */}
           {pickedCardIndex !== null && isFlipped && (
             <div className="bottom-controls">
               <button className="ctrl-btn home-btn" onClick={handleResetAll}>
