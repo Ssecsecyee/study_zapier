@@ -45,8 +45,8 @@ function CategoryRandomPage() {
 
     setRotation(
       rotation +
-        extraTurns * 360 +
-        correction
+      extraTurns * 360 +
+      correction
     );
   };
 
@@ -82,8 +82,8 @@ function CategoryRandomPage() {
             {isSpinning
               ? "두근두근... 🍴"
               : selectedCategory
-              ? `${selectedCategory}.`
-              : "돌림판을 돌려주세요!"}
+                ? `${selectedCategory}.`
+                : "돌림판을 돌려주세요!"}
           </strong>
 
         </div>
@@ -105,8 +105,8 @@ function CategoryRandomPage() {
           {isSpinning
             ? "돌리는 중..."
             : selectedCategory
-            ? "다시 돌리기 🎯"
-            : "돌림판 돌리기 🎯"}
+              ? "다시 돌리기 🎯"
+              : "돌림판 돌리기 🎯"}
         </button>
 
       </section>

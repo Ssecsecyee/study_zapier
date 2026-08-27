@@ -4,15 +4,39 @@ import CardDrawStep from './CardDrawStep';
 import './CategoryChoose.css';
 
 // 내부에 데이터를 직접 import해서 props 누락 방지
+import { supabase } from '../../supabaseClient';
 import { CATEGORIES as DEFAULT_CATEGORIES } from '../../data/categories';
 import { stores as DEFAULT_STORES } from '../../data/stores';
 
 const CategoryChoose = ({ categories, storesData, onGoHome, initialCategory = null }) => {
-  // props가 안 들어오면 알아서 categories.js와 stores.js 데이터를 사용
+  const [dbStores, setDbStores] = useState(DEFAULT_STORES);
+
+  useEffect(() => {
+    async function fetchStores() {
+      try {
+        const { data, error } = await supabase
+          .from('place')
+          .select('place_id, store_name, image, distance, category_id, category(category_name)');
+        
+        if (!error && data && data.length > 0) {
+          const formatted = data.map((item) => ({
+            id: item.place_id,
+            name: item.store_name,
+            category: item.category?.category_name || '',
+            image: item.image,
+            distance: item.distance ? (String(item.distance).includes('m') ? item.distance : `${Math.round(Number(item.distance))}m`) : '',
+          }));
+          setDbStores(formatted);
+        }
+      } catch (err) {
+        console.error('Supabase fetch error in CategoryChoose:', err);
+      }
+    }
+    fetchStores();
+  }, []);
+
   const categoryList = (categories && categories.length > 0) ? categories : DEFAULT_CATEGORIES;
-  const storeList = (storesData && (Array.isArray(storesData) ? storesData.length > 0 : Object.keys(storesData).length > 0)) 
-    ? storesData 
-    : DEFAULT_STORES;
+  const storeList = dbStores && dbStores.length > 0 ? dbStores : (storesData || DEFAULT_STORES);
 
   const [step, setStep] = useState(initialCategory ? 2 : 1);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
@@ -40,8 +64,8 @@ const CategoryChoose = ({ categories, storesData, onGoHome, initialCategory = nu
   const getRandomStore = (category) => {
     let stores = [];
     if (Array.isArray(storeList)) {
-      stores = category === "맛집" 
-        ? storeList 
+      stores = category === "맛집"
+        ? storeList
         : storeList.filter((s) => s.category === category);
     } else {
       stores = storeList[category] || [];
